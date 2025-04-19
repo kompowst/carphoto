@@ -1,0 +1,92 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #0e0e0e;
+  color: #e0e0e0;
+  text-align: center;
+  padding: 2rem;
+}
+
+header {
+  background-color: #1a1a1a;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.header-content h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.header-content p {
+  font-size: 1rem;
+  color: #f1f1f1;
+}
+
+/* Masonry column layout */
+.gallery {
+  column-count: 4;
+  column-gap: 10px;
+  padding: 20px;
+}
+
+.gallery img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+  break-inside: avoid;
+  object-fit: contain;
+  border-radius: 0;
+  display: block;
+  background: #111;
+}
+
+/* Responsive column adjustments */
+@media (max-width: 1200px) {
+  .gallery {
+    column-count: 3;
+  }
+}
+
+@media (max-width: 800px) {
+  .gallery {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 500px) {
+  .gallery {
+    column-count: 1;
+  }
+}
+
+footer {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: #1a1a1a;
+  color: #eee;
+}
+
+footer h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+footer p {
+  margin-bottom: 0.4rem;
+  word-wrap: break-word;
+}
+
+footer a {
+  color: #80bfff;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
