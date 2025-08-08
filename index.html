@@ -1,156 +1,353 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Photo Gallery</title>
-  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --accent: #ff00ff;
-      --bg: #00ff00;
-      --card-bg: #ffff00;
-      --text: #000;
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Comic Neue', 'Comic Sans MS', Arial, 'Times New Roman', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-    }
-    header {
-      text-align: center;
-      padding: 2rem;
-      font-size: 4rem;
-      color: var(--accent);
-      text-shadow: 2px 2px 0 #000;
-      animation: wiggle 1s infinite;
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      margin-bottom: 2rem;
-    }
-    nav a {
-      color: #000;
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border: 4px dashed var(--accent);
-      border-radius: 10px;
-      background: #fff;
-      transition: all 0.3s ease;
-    }
-    nav a:hover {
-      background: var(--accent);
-      color: #fff;
-      transform: rotate(-5deg);
-    }
-    .page {
-      padding: 2rem;
-      display: none;
-      animation: popIn 0.5s ease forwards;
-    }
-    .active {
-      display: block;
-    }
-    .folder {
-      background: var(--card-bg);
-      margin: 1rem;
-      padding: 1rem;
-      border: 3px dotted #f00;
-      border-radius: 25px;
-      box-shadow: 0 0 10px 5px #000;
-      cursor: pointer;
-      transition: transform 0.3s ease, rotate 0.3s;
-      text-align: center;
-    }
-    .folder:hover {
-      transform: scale(1.1) rotate(-2deg);
-    }
-    .preview {
-      width: 100%;
-      max-height: 150px;
-      object-fit: cover;
-      border-radius: 15px;
-      margin-top: 0.5rem;
-      box-shadow: 0 0 10px #000;
-    }
-    .photos {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .photos img {
-      width: 100%;
-      border: 5px dashed #f0f;
-      border-radius: 15px;
-      transition: transform 0.3s ease;
-    }
-    .photos img:hover {
-      transform: rotate(5deg) scale(1.2);
-    }
-    @keyframes wiggle {
-      0%, 100% { transform: rotate(-2deg); }
-      50% { transform: rotate(2deg); }
-    }
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Y2K Chrome Studio — Drop & Share</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+<style>
+  /* --- Y2K chrome + layout --- */
+  :root{
+    --bg1:#041527; --bg2:#081e3a; --neon:#7ef2ff; --gold:#ffd86b; --glass:rgba(255,255,255,0.06);
+    --chrome1:linear-gradient(180deg,#f7f9fa,#dfe8ee); --metal:#bfc8d6;
+  }
+  html,body{height:100%}
+  body{
+    margin:0; font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: radial-gradient(1200px 400px at 10% 10%, rgba(0,60,80,0.15), transparent),
+                linear-gradient(180deg,var(--bg1),var(--bg2));
+    color:#e8f6ff; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; min-height:100vh;
+  }
+
+  /* chrome header */
+  .topbar{
+    margin:18px auto; width:calc(100% - 48px); max-width:1180px;
+    border-radius:28px; padding:14px 20px; display:flex; align-items:center; gap:12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+    background:
+      radial-gradient(400px 80px at 10% 5%, rgba(255,255,255,0.06), transparent),
+      linear-gradient(180deg,#0f2433 0%, rgba(18,58,75,0.75) 50%, rgba(4,6,8,0.25) 100%);
+    border: 2px solid rgba(255,255,255,0.04);
+    position:relative;
+    overflow:visible;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px; min-width:220px;
+  }
+  .badge{
+    width:56px; height:56px; border-radius:12px;
+    background: linear-gradient(145deg,#e6faff,#bfeaff 40%, #9bd3ff 80%);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.5), inset 0 -6px 16px rgba(255,255,255,0.25);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:#042;
+    transform:skewY(-3deg);
+    font-family: 'Impact', sans-serif;
+  }
+  .title{
+    font-size:18px; font-weight:800; letter-spacing:1px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.8), 0 0 12px rgba(126,242,255,0.07);
+    color: linear-gradient(#fff,#cfefff);
+  }
+  .drop-hint{font-size:12px; opacity:0.9}
+  .actions{margin-left:auto; display:flex; gap:8px; align-items:center}
+
+  /* chrome button */
+  .btn{
+    padding:9px 12px; border-radius:12px; cursor:pointer; user-select:none;
+    font-weight:700; font-size:13px; color:#02293a; background: linear-gradient(#d7f7ff,#b6f0ff 55%);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.7);
+    border:2px solid rgba(255,255,255,0.55);
+  }
+  .btn.ghost{
+    background:transparent; color:#d5f8ff; border:1px solid rgba(255,255,255,0.06);
+    box-shadow:none;
+  }
+
+  /* canvas grid */
+  .canvas{
+    width:calc(100% - 48px); max-width:1180px; margin:16px auto;
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:18px;
+  }
+
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:14px; padding:12px; position:relative; overflow:visible;
+    border: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    min-height:120px;
+  }
+
+  .title-bubble{
+    position:absolute; left:14px; top:-12px; padding:6px 10px; border-radius:999px;
+    background: linear-gradient(180deg,#000000cc,#00000066); font-size:12px; font-weight:700;
+    border:1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 6px 10px rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+  }
+
+  /* shiny chrome frame variants (randomized) */
+  .fr1{ border:6px double #cdefff; box-shadow: 0 14px 30px rgba(0,0,0,0.6), inset 0 3px 10px rgba(255,255,255,0.12);}
+  .fr2{ border:5px dashed #ffd8b6; box-shadow: 0 10px 22px rgba(0,0,0,0.6), inset 0 -6px 12px rgba(255,255,255,0.06);}
+  .fr3{ border:7px solid #c6d6ff; border-radius:20px; box-shadow: 0 16px 40px rgba(0,0,0,0.7), inset 0 8px 18px rgba(255,255,255,0.08);}
+  .fr4{ border-left:6px solid #ffd86b; border-top:2px solid rgba(255,255,255,0.12); box-shadow: 0 8px 18px rgba(0,0,0,0.6);}
+  .fr5{ box-shadow: 0 12px 30px rgba(0,0,0,0.7), 0 0 22px rgba(126,242,255,0.06) inset; border-radius:12px; border:3px solid rgba(255,255,255,0.04);}
+
+  .imgwrap{ width:100%; height:180px; overflow:hidden; border-radius:10px; resize:both; overflow:auto; background:#021620}
+  .imgwrap img{ width:100%; height:100%; object-fit:cover; display:block; user-select:none; -webkit-user-drag:none; }
+
+  .meta{ font-size:11px; margin-top:8px; display:flex; justify-content:space-between; color:#cfeeff; opacity:0.9}
+
+  /* responsive */
+  @media (max-width:640px){
+    .topbar{border-radius:16px; padding:10px; gap:8px}
+    .badge{width:46px;height:46px}
+    .imgwrap{height:140px}
+  }
+
+  /* small sparkle */
+  .sparkle{ position:absolute; right:12px; top:8px; font-size:12px; color:rgba(255,255,255,0.85); text-shadow:0 2px 8px rgba(0,0,0,0.6)}
+</style>
 </head>
 <body>
-  <header>👌 photo gallery 👍</header>
-  <nav>
-    <a href="#" onclick="showPage('home')">🏠 Home</a>
-    <a href="#" onclick="showPage('gallery')">📁 Gallery</a>
-  </nav>
-  <section id="home" class="page active">
-    <h2>photo gallern</h2>
-    <p>Click on Gallery to explore photoshoots with colors and chaos!</p>
-  </section>
-  <section id="gallery" class="page">
-    <h2>Photoshoot Folders</h2>
-    <div class="folder" onclick="showFolder('nature')">
-      🌿 Nature
-      <img class="preview" src="https://www.arc.unsw.edu.au/generated/hero-large/frutiger1-jpg.jpg?1727404209" alt="Nature Preview">
+  <div class="topbar" id="drop-zone">
+    <div class="logo">
+      <div class="badge">Y2K</div>
+      <div>
+        <div class="title">Y2K Chrome Studio</div>
+        <div class="drop-hint">Drop images here or click upload — everyone sees the same gallery</div>
+      </div>
     </div>
-    <div class="folder" onclick="showFolder('urban')">
-      🏙️ Urban
-      <img class="preview" src="https://www.arc.unsw.edu.au/generated/hero-large/frutiger1-jpg.jpg?1727404209" alt="Urban Preview">
+
+    <div class="actions">
+      <button class="btn" id="upload-btn">+ Upload</button>
+      <button class="btn ghost" id="clear-btn" title="Clear bin (REMOVES for everyone)">Clear All</button>
     </div>
-    <div class="folder" onclick="showFolder('portraits')">
-      🧑‍🎨 Portraits
-      <img class="preview" src="https://www.arc.unsw.edu.au/generated/hero-large/frutiger1-jpg.jpg?1727404209" alt="Portraits Preview">
-    </div>
-    <div id="nature" class="photos" style="display:none">
-      <img src="https://www.arc.unsw.edu.au/generated/hero-large/frutiger1-jpg.jpg?1727404209" alt="Nature 1" />
-      <img src="https://www.arc.unsw.edu.au/generated/hero-large/frutiger1-jpg.jpg?1727404209" alt="Nature 2" />
-    </div>
-    <div id="urban" class="photos" style="display:none">
-      <img src="https://www.arc.unsw.edu.au/generated/hero-large/frutiger1-jpg.jpg?1727404209" alt="Urban 1" />
-      <img src="https://www.arc.unsw.edu.au/generated/hero-large/frutiger1-jpg.jpg?1727404209" alt="Urban 2" />
-    </div>
-    <div id="portraits" class="photos" style="display:none">
-      <img src="https://www.arc.unsw.edu.au/generated/hero-large/frutiger1-jpg.jpg?1727404209" alt="Portrait 1" />
-      <img src="https://www.arc.unsw.edu.au/generated/hero-large/frutiger1-jpg.jpg?1727404209" alt="Portrait 2" />
-    </div>
-  </section>
-  <script>
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
+    <input id="file-input" type="file" accept="image/*" multiple style="display:none" />
+  </div>
+
+  <main class="canvas" id="canvas"></main>
+
+  <footer style="width:calc(100% - 48px);max-width:1180px;margin:18px auto;text-align:center;color:#bfe9ff66">
+    <small>Built for maximum chrome & shiny — images hosted on Imgur, indexed in JSONBin.</small>
+  </footer>
+
+<script>
+/* ========== CONFIG - PASTE YOUR KEYS HERE ==========
+
+1) IMGUR_CLIENT_ID:
+   - Create an Imgur app: https://api.imgur.com/oauth2/addclient
+   - Use the Client ID string below.
+
+2) JSONBIN_BIN_ID and JSONBIN_SECRET
+   - Create a free bin at https://jsonbin.io (paste initial JSON: [])
+   - Copy the Bin ID and X-Master-Key and paste below.
+
+If you want truly zero-setup: I can provide a demo bin+client-id, but it will be public and shared globally.
+*/
+
+const IMGUR_CLIENT_ID = "PASTE_IMGUR_CLIENT_ID_HERE";
+const JSONBIN_BIN_ID = "PASTE_JSONBIN_BIN_ID_HERE";
+const JSONBIN_SECRET = "PASTE_JSONBIN_SECRET_HERE";
+
+/* ========== End config ========== */
+
+if(!IMGUR_CLIENT_ID || !JSONBIN_BIN_ID || !JSONBIN_SECRET){
+  console.warn("Please paste your IMGUR_CLIENT_ID, JSONBIN_BIN_ID and JSONBIN_SECRET into the top of the file.");
+}
+
+/* small utilities */
+function el(q, parent=document){ return parent.querySelector(q) }
+function create(tag, cls, parent){ const n=document.createElement(tag); if(cls) n.className=cls; if(parent) parent.appendChild(n); return n;}
+function uid(){ return Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-5) }
+
+/* chrome frame variants and titles */
+const FRAMES = ["fr1","fr2","fr3","fr4","fr5"];
+const TITLES = ["NeoChrome Snap","Glitched Gem","Bubble Tronic","Pixel Cruiser","Midnight Byte","Sparkle.exe","Pop Neon","Y2K Capsule","Ultra Shimmer","Cosmic Skater"];
+
+/* DOM */
+const dropZone = el("#drop-zone");
+const fileInput = el("#file-input");
+const uploadBtn = el("#upload-btn");
+const clearBtn = el("#clear-btn");
+const canvas = el("#canvas");
+
+/* JSONBin endpoints */
+const JSONBIN_BASE = "https://api.jsonbin.io/v3/b";
+const BIN_ENDPOINT = `${JSONBIN_BASE}/${JSONBIN_BIN_ID}`;
+
+/* load images from JSONBin */
+async function fetchImages(){
+  try{
+    const res = await fetch(`${BIN_ENDPOINT}/latest`, {
+      headers: { "X-Master-Key": JSONBIN_SECRET }
+    });
+    if(!res.ok) throw new Error("Failed to fetch bin: "+res.status);
+    const data = await res.json();
+    // jsonbin returns object {record: [...]}
+    const arr = data && data.record ? data.record : [];
+    return arr;
+  }catch(err){
+    console.error("fetchImages error",err);
+    return [];
+  }
+}
+
+/* overwrite bin with array (PUT) */
+async function saveImages(arr){
+  try{
+    const res = await fetch(BIN_ENDPOINT, {
+      method:"PUT",
+      headers:{
+        "Content-Type":"application/json",
+        "X-Master-Key": JSONBIN_SECRET
+      },
+      body: JSON.stringify(arr)
+    });
+    if(!res.ok) throw new Error("Failed save: "+res.status);
+    return true;
+  }catch(e){ console.error("saveImages",e); return false; }
+}
+
+/* Imgur upload (returns image link) */
+async function uploadToImgur(file){
+  const fd = new FormData();
+  fd.append("image", file);
+  try{
+    const res = await fetch("https://api.imgur.com/3/image", {
+      method:"POST",
+      headers: { Authorization: "Client-ID " + IMGUR_CLIENT_ID },
+      body: fd
+    });
+    const j = await res.json();
+    if(!j || !j.data || !j.data.link) throw new Error("Imgur upload failed");
+    return j.data.link;
+  }catch(err){ console.error("uploadToImgur",err); throw err; }
+}
+
+/* render the whole gallery */
+function renderGallery(items){
+  canvas.innerHTML = "";
+  if(!items || !items.length){
+    const p = create("div","card",canvas);
+    p.innerHTML = "<div style='text-align:center;padding:26px;color:#bfe9ff66'><h2 style='margin:0 0 8px 0'>Drop images to start the Y2K chrome gallery</h2><div style='font-size:13px'>Images uploaded are public and shared with everyone visiting this page</div></div>";
+    return;
+  }
+  items.forEach(item=>{
+    const card = create("div","card "+(item.frame||FRAMES[0]),canvas);
+    const title = create("div","title-bubble",card);
+    title.textContent = item.title || TITLES[Math.floor(Math.random()*TITLES.length)];
+    const sparkle = create("div","sparkle",card); sparkle.textContent = "✦";
+    const imgWrap = create("div","imgwrap",card);
+    imgWrap.style.width = (item.w||300) + "px";
+    imgWrap.style.height = (item.h||180) + "px";
+    const img = create("img",null,imgWrap);
+    img.src = item.url;
+    img.draggable = false;
+    img.onload = ()=>{ /* ensure min sizing */ };
+    // meta row
+    const meta = create("div","meta",card);
+    meta.innerHTML = `<div style="opacity:0.95">${item.title||"Untitled"}</div><div style="opacity:0.9">${(item.w||0)}×${(item.h||0)}</div>`;
+
+    /* Make resize persist: user resizes the .imgwrap and on mouseup we save new sizes */
+    let pointerDown=false;
+    imgWrap.addEventListener("pointerdown", ()=> pointerDown=true );
+    window.addEventListener("pointerup", async () => {
+      if(pointerDown){
+        pointerDown=false;
+        // record new size
+        const rect = imgWrap.getBoundingClientRect();
+        item.w = Math.round(rect.width);
+        item.h = Math.round(rect.height);
+        // save to bin
+        const all = await fetchImages();
+        // find and update
+        const idx = all.findIndex(x=>x.id === item.id);
+        if(idx>=0){ all[idx] = item; await saveImages(all); }
+        // re-render sizes quickly
+        renderGallery(all);
+      }
+    });
+
+  });
+}
+
+/* add new items to bin after uploading files */
+async function handleFiles(files){
+  const imageFiles = Array.from(files).filter(f=>f.type && f.type.startsWith("image"));
+  if(!imageFiles.length) return alert("Please drop image files only.");
+  // optimistic UI - show placeholders while uploading
+  const existing = await fetchImages();
+  const placeholders = imageFiles.map(f => ({
+    id: uid(),
+    url: "", title: TITLES[Math.floor(Math.random()*TITLES.length)], frame: FRAMES[Math.floor(Math.random()*FRAMES.length)],
+    w: 320, h: 200, uploading: true
+  }));
+  const newList = existing.concat(placeholders);
+  renderGallery(newList);
+
+  // upload sequentially (to avoid hitting rate limits)
+  for(let i=0;i<imageFiles.length;i++){
+    try{
+      const f = imageFiles[i];
+      const link = await uploadToImgur(f);
+      // replace placeholder (match by position)
+      const placeholder = placeholders[i];
+      placeholder.url = link;
+      delete placeholder.uploading;
+      // update the saved bin to include this new item
+      const cur = await fetchImages(); // re-fetch in case others added
+      cur.push(placeholder);
+      await saveImages(cur);
+      // refresh full gallery
+      const refresh = await fetchImages();
+      renderGallery(refresh);
+    }catch(err){
+      console.error("upload error",err);
+      alert("Upload failed for one image. See console for details.");
+      // revert placeholder
+      const refresh = await fetchImages();
+      renderGallery(refresh);
     }
-    function showFolder(folderId) {
-      document.querySelectorAll('.photos').forEach(f => f.style.display = 'none');
-      document.getElementById(folderId).style.display = 'grid';
-    }
-  </script>
+  }
+}
+
+/* delete all (clear bin) */
+async function clearAll(){
+  if(!confirm("Clear the shared gallery for everyone? This deletes all images in the JSON index (hosted images on Imgur will remain).")) return;
+  // overwrite with empty array
+  const ok = await saveImages([]);
+  if(ok) renderGallery([]);
+  else alert("Failed to clear — check console.");
+}
+
+/* init */
+async function init(){
+  // wire drag/drop
+  ["dragenter","dragover"].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.boxShadow="0 18px 40px rgba(0,0,0,0.7), 0 0 40px rgba(126,242,255,0.08) inset"; }));
+  ["dragleave","drop"].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.boxShadow=""; }));
+
+  dropZone.addEventListener("drop", async (ev)=>{
+    ev.preventDefault();
+    const files = ev.dataTransfer.files;
+    await handleFiles(files);
+  });
+
+  uploadBtn.addEventListener("click", ()=> fileInput.click());
+  fileInput.addEventListener("change", async (ev)=> {
+    await handleFiles(ev.target.files);
+    fileInput.value = "";
+  });
+
+  clearBtn.addEventListener("click", clearAll);
+
+  // initial load and render
+  const items = await fetchImages();
+  renderGallery(items);
+}
+
+// start
+init();
+
+</script>
 </body>
 </html>
